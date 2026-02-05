@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>安卓风格手机桌面</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #000;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 锁屏界面 */
+    #lock-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #1a1a2e, #16213e);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      transition: transform 0.6s ease;
+    }
+
+    #lock-screen.hide {
+      transform: translateY(-100%);
+    }
+
+    .lock-time {
+      font-size: 48px;
+      font-weight: 300;
+      margin-bottom: 10px;
+    }
+
+    .lock-date {
+      font-size: 18px;
+      opacity: 0.8;
+      margin-bottom: 60px;
+    }
+
+    .slide-tip {
+      position: absolute;
+      bottom: 60px;
+      font-size: 16px;
+      opacity: 0.7;
+      animation: slideHint 1.8s infinite alternate;
+    }
+
+    @keyframes slideHint {
+      from { transform: translateY(0); opacity: 0.6; }
+      to   { transform: translateY(-15px); opacity: 1; }
+    }
+
+    /* 桌面 */
+    #desktop {
+      width: 100vw;
+      height: 100vh;
+      background: #0f0f12;
+      color: white;
+      padding: 40px 20px 20px;
+      position: relative;
+    }
+
+    .desktop-time {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 300;
+      margin-bottom: 40px;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px 10px;
+      justify-items: center;
+      margin-top: 20px;
+    }
+
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .app-icon:active {
+      transform: scale(0.92);
+      background: #333;
+    }
+
+    .app-name {
+      margin-top: 6px;
+      font-size: 12px;
+      text-align: center;
+      color: #ddd;
+    }
+
+    /* 状态栏 */
+    .status-bar {
+      position: absolute;
+      top: 12px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #eee;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 锁屏 -->
+  <div id="lock-screen">
+    <div class="lock-time" id="lock-time-text">00:00</div>
+    <div class="lock-date" id="lock-date-text">2025年1月1日</div>
+    <div class="slide-tip">↑ 上滑解锁</div>
+  </div>
+
+  <!-- 桌面 -->
+  <div id="desktop">
+    <div class="status-bar">
+      <div id="status-time">00:00</div>
+      <div>📶 🔋</div>
+    </div>
+
+    <div class="desktop-time" id="desktop-time-text">00:00</div>
+
+    <div class="app-grid">
+      <div>
+        <div class="app-icon">⚙️</div>
+        <div class="app-name">设置</div>
+      </div>
+      <div>
+        <div class="app-icon">⛅</div>
+        <div class="app-name">天气</div>
+      </div>
+      <div>
+        <div class="app-icon">🎵</div>
+        <div class="app-name">音乐</div>
+      </div>
+
+      <div>
+        <div class="app-icon">💬</div>
+        <div class="app-name">聊天</div>
+      </div>
+      <div>
+        <div class="app-icon">📖</div>
+        <div class="app-name">世界书</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 时间实时更新
+    function updateTime() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const timeStr = `${h}:${m}`;
+
+      const y = now.getFullYear();
+      const mon = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const dateStr = `${y}年${mon}月${d}日`;
+
+      document.getElementById('lock-time-text').innerText = timeStr;
+      document.getElementById('lock-date-text').innerText = dateStr;
+      document.getElementById('desktop-time-text').innerText = timeStr;
+      document.getElementById('status-time').innerText = timeStr;
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // 上滑解锁
+    let startY = 0;
+    const lock = document.getElementById('lock-screen');
+
+    document.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+    });
+
+    document.addEventListener('touchend', (e) => {
+      const endY = e.changedTouches[0].clientY;
+      if (startY - endY > 50) { // 上滑距离足够
+        lock.classList.add('hide');
+      }
+    });
+  </script>
+
+</body>
+</html>
